@@ -13,7 +13,7 @@ public class WebhookService {
     public void someMethod() {
         RequestPayload payload = new RequestPayload("John Doe", "REG12347", "john@example.com");
 
-        // Call the Webhook service to get response
+
         String response = generateWebhook(payload);
 
         // Process the response as needed
@@ -23,7 +23,7 @@ public class WebhookService {
     public String generateWebhook(RequestPayload payload) {
         RestTemplate restTemplate = new RestTemplate();
 
-        // Setting headers, including Authorization (if needed)
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -31,7 +31,7 @@ public class WebhookService {
 
         HttpEntity<RequestPayload> entity = new HttpEntity<>(payload, headers);
 
-        // Make a POST request
+
         ResponseEntity<String> responseEntity = restTemplate.exchange(
                 GENERATE_WEBHOOK_URL,
                 HttpMethod.POST,
