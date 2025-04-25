@@ -1,20 +1,79 @@
 package com.bajaj.webhookapp.service;
 
 import com.bajaj.webhookapp.model.RequestPayload;
+import org.springframework.http.*;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+@Service
 public class WebhookService {
 
+    private final String GENERATE_WEBHOOK_URL = "https://bfhldevapigw.healthrx.co.in/hiring/generateWebhook";
+
     public void someMethod() {
-        // Create a RequestPayload object with the required arguments
-        RequestPayload payload = new RequestPayload("regNo_value", "param1_value", "param2_value", "param3_value");
+        RequestPayload payload = new RequestPayload("John Doe", "REG12347", "john@example.com");
 
-        // Access the regNo using the getRegNo() method
-        String regNo = payload.getRegNo();
+        // Call the Webhook service to get response
+        String response = generateWebhook(payload);
 
-        // Do something with the payload and regNo
-        System.out.println("RegNo: " + regNo);
+        // Process the response as needed
+        System.out.println("Response: " + response);
     }
 
-    public void callWebhookFlow() {
+    public String generateWebhook(RequestPayload payload) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        // Setting headers, including Authorization (if needed)
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+
+
+        HttpEntity<RequestPayload> entity = new HttpEntity<>(payload, headers);
+
+        // Make a POST request
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                GENERATE_WEBHOOK_URL,
+                HttpMethod.POST,
+                entity,
+                String.class
+        );
+
+
+        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+
+            return responseEntity.getBody();
+        } else {
+
+            System.out.println("Failed to generate webhook");
+            return null;
+        }
+    }
+
+    public void callWebhookFlow(String webhookUrl, String accessToken) {
+
+        String outcomePayload = "{\"outcome\": [[1, 2], [3, 4]]}";
+
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + accessToken);
+
+        HttpEntity<String> entity = new HttpEntity<>(outcomePayload, headers);
+
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                webhookUrl,
+                HttpMethod.POST,
+                entity,
+                String.class
+        );
+
+        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+
+            System.out.println("Webhook successfully triggered: " + responseEntity.getBody());
+        } else {
+            System.out.println("Failed to call webhook");
+        }
     }
 }

@@ -19,6 +19,9 @@ public class RequestPayload {
         this.param3 = param3;
     }
 
+    public RequestPayload(String johnDoe, String reg12347, String mail) {
+    }
+
     // Getter and Setter for regNo
     public String getRegNo() {
         return regNo;
